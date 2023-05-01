@@ -1,0 +1,308 @@
+{
+    "name": "東海道新幹線",
+    "stations": [
+        {
+            "name": "東京",
+            "distance": 0.0
+        },
+        {
+            "name": "品川",
+            "distance": 6.8
+        },
+        {
+            "name": "新横浜",
+            "distance": 25.5
+        },
+        {
+            "name": "小田原",
+            "distance": 76.7
+        },
+        {
+            "name": "熱海",
+            "distance": 95.4
+        },
+        {
+            "name": "三島",
+            "distance": 111.3
+        },
+        {
+            "name": "新富士",
+            "distance": 135.0
+        },
+        {
+            "name": "静岡",
+            "distance": 167.4
+        },
+        {
+            "name": "掛川",
+            "distance": 211.3
+        },
+        {
+            "name": "浜松",
+            "distance": 238.9
+        },
+        {
+            "name": "豊橋",
+            "distance": 274.2
+        },
+        {
+            "name": "三河安城",
+            "distance": 312.8
+        },
+        {
+            "name": "名古屋",
+            "distance": 342.0
+        },
+        {
+            "name": "岐阜羽島",
+            "distance": 367.1
+        },
+        {
+            "name": "米原",
+            "distance": 408.2
+        },
+        {
+            "name": "京都",
+            "distance": 476.3
+        },
+        {
+            "name": "新大阪",
+            "distance": 515.4
+        }
+    ],
+    "train_types": [
+        {
+            "name": "のぞみ",
+            "abbreviation": "N"
+        },
+        {
+            "name": "ひかり",
+            "abbreviation": "H"
+        },
+        {
+            "name": "こだま",
+            "abbreviation": "K"
+        }
+    ],
+    "dia": {
+        "outbound": [
+            {
+                "direction": "outbound",
+                "train_type": 1,
+                "station_time": [
+                    {
+                        "arrival": "",
+                        "departure": "90000",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "90600",
+                        "departure": "90700",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "91700",
+                        "departure": "91800",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "103900",
+                        "departure": "104100",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "111500",
+                        "departure": "111600",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "113000",
+                        "departure": "",
+                        "track": 1,
+                        "status": "stop"
+                    }
+                ]
+            },
+            {
+                "direction": "outbound",
+                "train_type": 1,
+                "station_time": [
+                    {
+                        "arrival": "",
+                        "departure": "093000",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "093600",
+                        "departure": "093700",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "094700",
+                        "departure": "094800",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "110300",
+                        "departure": "110500",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "",
+                        "departure": "",
+                        "track": 1,
+                        "status": "pass"
+                    },
+                    {
+                        "arrival": "113700",
+                        "departure": "113800",
+                        "track": 1,
+                        "status": "stop"
+                    },
+                    {
+                        "arrival": "115200",
+                        "departure": "",
+                        "track": 1,
+                        "status": "stop"
+                    }
+                ]
+            }
+        ],
+        "inbound": []
+    }
+}

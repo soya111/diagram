@@ -1,0 +1,126 @@
+{
+  "direction": "outbound",
+  "train_name": "ひかり501号",
+  "train_type": 1,
+  "station_time": [
+    {
+      "station_name": "東京",
+      "arrival": "",
+      "departure": "70300",
+      "track": 1,
+      "status": "stop"
+    },
+    {
+      "station_name": "品川",
+      "arrival": "70900",
+      "departure": "71000",
+      "track": 1,
+      "status": "stop"
+    },
+    {
+      "station_name": "新横浜",
+      "arrival": "72000",
+      "departure": "72100",
+      "track": 1,
+      "status": "stop"
+    },
+    {
+      "station_name": "小田原",
+      "arrival": "",
+      "departure": "",
+      "track": 1,
+      "status": "pass"
+    },
+    {
+      "station_name": "熱海",
+      "arrival": "",
+      "departure": "",
+      "track": 1,
+      "status": "pass"
+    },
+    {
+      "station_name": "三島",
+      "arrival": "",
+      "departure": "",
+      "track": 1,
+      "status": "pass"
+    },
+    {
+      "station_name": "新富士（静岡県）",
+      "arrival": "",
+      "departure": "",
+      "track": 1,
+      "status": "pass"
+    },
+    {
+      "station_name": "静岡",
+      "arrival": "80200",
+      "departure": "80700",
+      "track": 1,
+      "status": "stop"
+    },
+    {
+      "station_name": "掛川",
+      "arrival": "",
+      "departure": "",
+      "track": 1,
+      "status": "pass"
+    },
+    {
+      "station_name": "浜松",
+      "arrival": "82700",
+      "departure": "83100",
+      "track": 1,
+      "status": "stop"
+    },
+    {
+      "station_name": "豊橋",
+      "arrival": "",
+      "departure": "",
+      "track": 1,
+      "status": "pass"
+    },
+    {
+      "station_name": "三河安城",
+      "arrival": "",
+      "departure": "",
+      "track": 1,
+      "status": "pass"
+    },
+    {
+      "station_name": "名古屋",
+      "arrival": "90100",
+      "departure": "90300",
+      "track": 1,
+      "status": "stop"
+    },
+    {
+      "station_name": "岐阜羽島",
+      "arrival": "",
+      "departure": "",
+      "track": 1,
+      "status": "pass"
+    },
+    {
+      "station_name": "米原",
+      "arrival": "",
+      "departure": "",
+      "track": 1,
+      "status": "pass"
+    },
+    {
+      "station_name": "京都",
+      "arrival": "93700",
+      "departure": "94300",
+      "track": 1,
+      "status": "stop"
+    },
+    {
+      "station_name": "新大阪",
+      "arrival": "95700",
+      "departure": "95900",
+      "track": 1,
+      "status": "stop"
+    }
+  ]
+}
