@@ -1,8 +1,8 @@
 import glob
 import json
 from datetime import datetime, timedelta
-import numpy as np
 
+import numpy as np
 from bokeh.models import CustomJSTickFormatter, FixedTicker
 from bokeh.plotting import figure, output_file, show
 
@@ -17,14 +17,6 @@ station_names = [station["name"] for station in json_data["stations"]]
 
 # 駅名に対応する目盛り値を作成
 station_indices = [station["distance"] for station in json_data["stations"]]
-
-# プロットするデータ
-p = figure(
-    y_range=(max(station_indices), min(station_indices)),
-    x_axis_type="datetime",
-    width=2400,
-    height=1200,
-)
 
 
 def load_train_data_from_files():
@@ -154,35 +146,51 @@ for train in train_data_list:
     x_data_list.append(updated_train_times)
     y_data_list.append(y_data)
 
-for x_data, y_data, train in zip(x_data_list, y_data_list, train_data_list):
-    train_color = get_train_color(train["train_name"])
 
-    # プロット
+def create_plot(station_indices, station_names):
+    p = figure(
+        y_range=(max(station_indices), min(station_indices)),
+        x_axis_type="datetime",
+        width=2400,
+        height=1200,
+    )
+
+    # y軸の目盛り位置を設定
+    p.yaxis.ticker = FixedTicker(ticks=station_indices)
+
+    # y軸の目盛りラベルを駅名に変更
+    station_mapping = {str(y): name for y, name in zip(station_indices, station_names)}
+    p.yaxis.formatter = CustomJSTickFormatter(
+        code="""
+        const station_mapping = %s;
+        return station_mapping[tick.toFixed(1)];
+        """
+        % json.dumps(station_mapping)
+    )
+
+    return p
+
+
+def plot_train_data(p, x_data, y_data, train_name, train_color):
     p.line(x_data, y_data, line_width=2, line_color=train_color, alpha=0.5)
     p.text(
         x_data[0],
         y_data[0],
-        text=[train["train_name"]],
+        text=[train_name],
         text_font_size="10pt",
         text_color=train_color,
     )
 
 
+# プロットするデータ
+p = create_plot(station_indices, station_names)
+
+for x_data, y_data, train in zip(x_data_list, y_data_list, train_data_list):
+    train_color = get_train_color(train["train_name"])
+    plot_train_data(p, x_data, y_data, train["train_name"], train_color)
+
+
 # 出力ファイルの設定
 output_file("index.html")
-
-
-# y軸の目盛り位置を設定
-p.yaxis.ticker = FixedTicker(ticks=station_indices)
-
-# y軸の目盛りラベルを駅名に変更
-station_mapping = {str(y): name for y, name in zip(station_indices, station_names)}
-p.yaxis.formatter = CustomJSTickFormatter(
-    code="""
-    const station_mapping = %s;
-    return station_mapping[tick.toFixed(1)];
-    """
-    % json.dumps(station_mapping)
-)
 
 show(p)
