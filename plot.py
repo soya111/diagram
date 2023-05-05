@@ -15,13 +15,16 @@ with open("data.json", "r", encoding="utf-8") as f:
 # 駅名のリストを作成
 station_names = [station["name"] for station in json_data["stations"]]
 
-# 駅名に対応する目盛り値を作成
+# 始発駅からの距離のリストを作成
 station_indices = [station["distance"] for station in json_data["stations"]]
 
 
-def load_train_data_from_files():
+def load_train_data_from_files(file_pattern):
     """
     JSON ファイルから列車データを読み込む
+
+    Args:
+        file_pattern (str): 読み込むファイルのパターン（例: "trains/*.json"）
 
     Returns:
         list: 列車データのリスト
@@ -29,8 +32,8 @@ def load_train_data_from_files():
 
     train_data_list = []
 
-    # "trains/{train_name}.json" というパターンに一致するファイル名のリストを取得
-    file_list = glob.glob("trains/*.json")
+    # 引数で指定されたパターンに一致するファイル名のリストを取得
+    file_list = glob.glob(file_pattern)
 
     # ファイルリストをループして、すべてのファイルを読み込み、JSON をパースし、リストに追加
     for file_name in file_list:
@@ -41,7 +44,7 @@ def load_train_data_from_files():
     return train_data_list
 
 
-train_data_list = load_train_data_from_files()
+train_data_list = load_train_data_from_files("trains/*.json")
 
 
 BASE_DATETIME = datetime(1900, 1, 1)
