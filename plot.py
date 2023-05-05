@@ -55,34 +55,41 @@ train_data_list = load_train_data_from_files()
 BASE_DATETIME = datetime(1900, 1, 1)
 
 
-def calculate_passing_times(time_data, station_indices):
+def calculate_passing_times(train_times, train_distances):
     """
-    通過駅の推定通過時刻を計算し、対応する time_data の位置に追加する関数。
+    通過駅の推定通過時刻を計算し、対応する train_times の位置に追加する関数。
 
     引数:
-        time_data (list): 各駅の時刻データ (通過駅の場合は None) を格納したリスト。
-        station_indices (list): 各駅のインデックスデータを格納したリスト。
+        train_times (list): 各駅の時刻データ (通過駅の場合は None) を格納したリスト。
+        train_distances (list): 各駅のインデックスデータを格納したリスト。
 
     戻り値:
-        なし。time_data が更新され、通過駅の推定通過時刻が追加されます。
+        list: 通過駅の推定通過時刻が追加された新しいリスト。
     """
+
+    # 新しいリストを作成し、train_times の内容をコピー
+    updated_train_times = train_times.copy()
 
     # 通過駅の推定通過時刻を計算
 
-    # まず、通過駅ではない駅の時刻データをUNIXタイムスタンプに変換し、time_data_np として保存します。
-    time_data_np = np.array(
-        [(x - BASE_DATETIME).total_seconds() for x in time_data if x is not None]
+    # まず、通過駅ではない駅の時刻データをUNIXタイムスタンプに変換し、train_times_np として保存します。
+    train_times_np = np.array(
+        [
+            (x - BASE_DATETIME).total_seconds()
+            for x in updated_train_times
+            if x is not None
+        ]
     )
 
-    # 通過駅ではない駅のインデックスを station_indices_np として保存します。
-    station_indices_np = np.array(
-        [y for x, y in zip(time_data, station_indices) if x is not None]
+    # 通過駅ではない駅のインデックスを train_distances_np として保存します。
+    train_distances_np = np.array(
+        [y for x, y in zip(updated_train_times, train_distances) if x is not None]
     )
 
-    # time_data から通過駅の位置とインデックスを取得し、passing_stations に保存します。
+    # updated_train_times から通過駅の位置とインデックスを取得し、passing_stations に保存します。
     passing_stations = [
         (i, idx)
-        for i, (x, idx) in enumerate(zip(time_data, station_indices))
+        for i, (x, idx) in enumerate(zip(updated_train_times, train_distances))
         if x is None
     ]
 
@@ -91,13 +98,15 @@ def calculate_passing_times(time_data, station_indices):
         # 線形補完を使用して、通過駅の推定通過時刻を計算します。
         # passing_stations のインデックス部分だけを渡して線形補完を行います。
         estimated_passing_times = np.interp(
-            [idx for _, idx in passing_stations], station_indices_np, time_data_np
+            [idx for _, idx in passing_stations], train_distances_np, train_times_np
         )
 
-        # 通過駅の推定通過時刻を、対応する time_data の位置に追加します。
-        # passing_stations に保存された位置情報 (i) を使用して、time_data に推定通過時刻を追加します。
+        # 通過駅の推定通過時刻を、対応する updated_train_times の位置に追加します。
+        # passing_stations に保存された位置情報 (i) を使用して、updated_train_times に推定通過時刻を追加します。
         for (i, _), passing_time in zip(passing_stations, estimated_passing_times):
-            time_data[i] = BASE_DATETIME + timedelta(seconds=passing_time)
+            updated_train_times[i] = BASE_DATETIME + timedelta(seconds=passing_time)
+
+    return updated_train_times
 
 
 x_data_list = []
@@ -140,9 +149,9 @@ for train in train_data_list:
                 y_data.append(station_indices[i])
 
     # 通過駅の推定通過時刻を計算
-    calculate_passing_times(x_data, y_data)
+    updated_train_times = calculate_passing_times(x_data, y_data)
 
-    x_data_list.append(x_data)
+    x_data_list.append(updated_train_times)
     y_data_list.append(y_data)
 
 for x_data, y_data, train in zip(x_data_list, y_data_list, train_data_list):
@@ -157,14 +166,6 @@ for x_data, y_data, train in zip(x_data_list, y_data_list, train_data_list):
         text_font_size="10pt",
         text_color=train_color,
     )
-    # p.circle(
-    #     x_data,
-    #     y_data,
-    #     size=5,
-    #     fill_color=train_color,
-    #     line_color=train_color,
-    #     alpha=0.5,
-    # )
 
 
 # 出力ファイルの設定
