@@ -18,10 +18,8 @@ station_names = [station["name"] for station in json_data["stations"]]
 # 始発駅からの距離のリスト
 station_indices = [station["distance"] for station in json_data["stations"]]
 
-# 距離から駅名を取得するための辞書
+# 辞書作成: 距離から駅名取得、距離から駅インデックス取得
 station_indices_dict = dict(zip(station_indices, station_names))
-
-# 距離から駅のインデックスを取得するための辞書
 station_indices_to_index_dict = dict(zip(station_indices, range(len(station_indices))))
 
 
@@ -42,6 +40,8 @@ def load_train_data_from_files(file_pattern):
 
 train_data_list = load_train_data_from_files("trains/*.json")
 
+# 列車名のリスト
+train_names = [train["train_name"] for train in train_data_list]
 
 BASE_DATETIME = datetime(1900, 1, 1)
 
@@ -105,10 +105,19 @@ station_train_times = [
     {"arrival": [], "departure": []} for _ in range(len(station_names))
 ]
 
+# 列車の発着時刻を保存するためのリスト
+train_timetable = {
+    train_name: [{"station_name": station_name} for station_name in station_names]
+    for train_name in train_names
+}
+
+# bokehのプロット用のデータを保存するリスト
 x_data_list = []
 y_data_list = []
 
 for train in train_data_list:
+    train_name = train["train_name"]
+
     x_data = []
     y_data = []
 
@@ -133,25 +142,25 @@ for train in train_data_list:
 
         # 通過駅の場合
         if station["arrival"] == "" and station["departure"] == "":
+            train_timetable[train_name][i]["status"] = "pass"
             x_data.append(None)
             y_data.append(station_indices[i])
         # 停車駅の場合
         else:
+            train_timetable[train_name][i]["status"] = "stop"
             if station["arrival"] != "":
                 arrival_time = datetime.strptime(station["arrival"], "%H%M%S")
                 x_data.append(arrival_time)
                 y_data.append(station_indices[i])
-                station_train_times[i]["arrival"].append(
-                    (arrival_time, train["train_name"])
-                )
+                station_train_times[i]["arrival"].append((arrival_time, train_name))
+                train_timetable[train_name][i]["arrival"] = arrival_time
 
             if station["departure"] != "":
                 departure_time = datetime.strptime(station["departure"], "%H%M%S")
                 x_data.append(departure_time)
                 y_data.append(station_indices[i])
-                station_train_times[i]["departure"].append(
-                    (departure_time, train["train_name"])
-                )
+                station_train_times[i]["departure"].append((departure_time, train_name))
+                train_timetable[train_name][i]["departure"] = departure_time
 
     # 通過駅の推定通過時刻を計算
     updated_train_times = calculate_passing_times(x_data, y_data)
@@ -161,11 +170,13 @@ for train in train_data_list:
         if x_data[i] is None and updated_time is not None:
             station_index = station_indices_to_index_dict[y]
             station_train_times[station_index]["arrival"].append(
-                (updated_time, train["train_name"])
+                (updated_time, train_name)
             )
+            train_timetable[train_name][station_index]["arrival"] = updated_time
             station_train_times[station_index]["departure"].append(
-                (updated_time, train["train_name"])
+                (updated_time, train_name)
             )
+            train_timetable[train_name][station_index]["departure"] = updated_time
 
     x_data_list.append(updated_train_times)
     y_data_list.append(y_data)
@@ -174,16 +185,6 @@ for train in train_data_list:
 for station_index, station_train_time in enumerate(station_train_times):
     station_train_time["arrival"].sort(key=lambda x: x[0])
     station_train_time["departure"].sort(key=lambda x: x[0])
-
-    # ソート後の列車の順序をログファイルに出力
-    # with open(f"tmp/station_train_time_{station_index}.log", "w") as f:
-    #     f.write("arrival\n")
-    #     for arrival_time, train_name in station_train_time["arrival"]:
-    #         f.write(f"{arrival_time.strftime('%H:%M:%S')},{train_name}\n")
-
-    #     f.write("departure\n")
-    #     for departure_time, train_name in station_train_time["departure"]:
-    #         f.write(f"{departure_time.strftime('%H:%M:%S')},{train_name}\n")
 
 
 def compare_train_orders(prev_station_train_time, current_station_train_time):
