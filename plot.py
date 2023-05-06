@@ -12,24 +12,20 @@ from tokaido import get_train_color
 with open("data.json", "r", encoding="utf-8") as f:
     json_data = json.load(f)
 
-# 駅名のリストを作成
+# 駅名のリスト
 station_names = [station["name"] for station in json_data["stations"]]
 
-# 始発駅からの距離のリストを作成
+# 始発駅からの距離のリスト
 station_indices = [station["distance"] for station in json_data["stations"]]
+
+# 距離から駅名を取得するための辞書
+station_indices_dict = dict(zip(station_indices, station_names))
+
+# 距離から駅のインデックスを取得するための辞書
+station_indices_to_index_dict = dict(zip(station_indices, range(len(station_indices))))
 
 
 def load_train_data_from_files(file_pattern):
-    """
-    JSON ファイルから列車データを読み込む
-
-    Args:
-        file_pattern (str): 読み込むファイルのパターン（例: "trains/*.json"）
-
-    Returns:
-        list: 列車データのリスト
-    """
-
     train_data_list = []
 
     # 引数で指定されたパターンに一致するファイル名のリストを取得
@@ -104,6 +100,11 @@ def calculate_passing_times(train_times, train_distances):
     return updated_train_times
 
 
+# 駅到着、駅出発時刻時点での列車の順序を保持するためのリスト
+station_train_times = [
+    {"arrival": [], "departure": []} for _ in range(len(station_names))
+]
+
 x_data_list = []
 y_data_list = []
 
@@ -137,17 +138,96 @@ for train in train_data_list:
         # 停車駅の場合
         else:
             if station["arrival"] != "":
-                x_data.append(datetime.strptime(station["arrival"], "%H%M%S"))
+                arrival_time = datetime.strptime(station["arrival"], "%H%M%S")
+                x_data.append(arrival_time)
                 y_data.append(station_indices[i])
+                station_train_times[i]["arrival"].append(
+                    (arrival_time, train["train_name"])
+                )
+
             if station["departure"] != "":
-                x_data.append(datetime.strptime(station["departure"], "%H%M%S"))
+                departure_time = datetime.strptime(station["departure"], "%H%M%S")
+                x_data.append(departure_time)
                 y_data.append(station_indices[i])
+                station_train_times[i]["departure"].append(
+                    (departure_time, train["train_name"])
+                )
 
     # 通過駅の推定通過時刻を計算
     updated_train_times = calculate_passing_times(x_data, y_data)
 
+    # 通過駅の推定通過時刻を station_train_times に追加
+    for i, (updated_time, y) in enumerate(zip(updated_train_times, y_data)):
+        if x_data[i] is None and updated_time is not None:
+            station_index = station_indices_to_index_dict[y]
+            station_train_times[station_index]["arrival"].append(
+                (updated_time, train["train_name"])
+            )
+            station_train_times[station_index]["departure"].append(
+                (updated_time, train["train_name"])
+            )
+
     x_data_list.append(updated_train_times)
     y_data_list.append(y_data)
+
+# 列車の到着時刻、出発時刻を時刻順にソート
+for station_index, station_train_time in enumerate(station_train_times):
+    station_train_time["arrival"].sort(key=lambda x: x[0])
+    station_train_time["departure"].sort(key=lambda x: x[0])
+
+    # ソート後の列車の順序をログファイルに出力
+    # with open(f"tmp/station_train_time_{station_index}.log", "w") as f:
+    #     f.write("arrival\n")
+    #     for arrival_time, train_name in station_train_time["arrival"]:
+    #         f.write(f"{arrival_time.strftime('%H:%M:%S')},{train_name}\n")
+
+    #     f.write("departure\n")
+    #     for departure_time, train_name in station_train_time["departure"]:
+    #         f.write(f"{departure_time.strftime('%H:%M:%S')},{train_name}\n")
+
+
+def compare_train_orders(prev_station_train_time, current_station_train_time):
+    prev_departure_order = [
+        train_name for _, train_name in prev_station_train_time["departure"]
+    ]
+    current_arrival_order = [
+        train_name for _, train_name in current_station_train_time["arrival"]
+    ]
+
+    return (
+        prev_departure_order == current_arrival_order,
+        prev_departure_order,
+        current_arrival_order,
+    )
+
+
+# 駅間の列車の順序を確認
+for i in range(len(station_train_times) - 1):
+    prev_station_name = station_names[i]
+    current_station_name = station_names[i + 1]
+    prev_station_train_time = station_train_times[i]
+    current_station_train_time = station_train_times[i + 1]
+
+    orders_match, prev_departure_order, current_arrival_order = compare_train_orders(
+        prev_station_train_time, current_station_train_time
+    )
+
+    # 列車の本数が変わらないことを確認
+    assert len(prev_departure_order) == len(
+        current_arrival_order
+    ), f"駅 {prev_station_name} から 駅 {current_station_name} で列車の本数が変わりました。"
+
+    if not orders_match:
+        print(f"駅間での列車の順序が異なります: 駅 {prev_station_name} から 駅 {current_station_name}")
+        for prev_train, current_train in zip(
+            prev_departure_order, current_arrival_order
+        ):
+            if prev_train != current_train:
+                print(
+                    f"列車が入れ替わりました: {prev_station_name}駅出発順序 {prev_train}, {current_station_name}駅到着順序 {current_train}"
+                )
+    else:
+        print(f"駅間での列車の順序は一致しています: 駅 {prev_station_name} から 駅 {current_station_name}")
 
 
 def create_plot(station_indices, station_names):
